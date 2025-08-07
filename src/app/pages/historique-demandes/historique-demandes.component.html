@@ -26,17 +26,7 @@
         <td>{{ demande.departement }}</td>
         <td>{{ demande.responsableDirect }}</td>
 
-        <!-- Badge coloré -->
-        <td>
-          <span
-            [ngClass]="{
-              'badge bg-warning text-dark': demande.etat === 'EN_ATTENTE',
-              'badge bg-success': demande.etat === 'VALIDÉE',
-              'badge bg-danger': demande.etat === 'REFUSÉE'
-            }">
-            {{ demande.etat }}
-          </span>
-        </td>
+
 
         <!-- Voir le CV -->
         <td>

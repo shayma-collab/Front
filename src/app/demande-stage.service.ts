@@ -6,11 +6,22 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class DemandeStageService {
-  private baseUrl = 'http://localhost:8080/api/demandes'; // ✅ L'URL de ton backend Spring Boot
+  private baseUrl = 'http://localhost:8080/api/demandes'; // ✅ Adapté à ton backend Spring Boot
 
   constructor(private http: HttpClient) {}
 
-  envoyerDemandeStage(formData: FormData): Observable<any> {
+  // ✅ Création d'une demande avec fichier CV (FormData)
+  createDemande(formData: FormData): Observable<any> {
     return this.http.post(this.baseUrl, formData);
+  }
+
+  // ✅ Optionnel : récupération de toutes les demandes
+  getAllDemandes(): Observable<any> {
+    return this.http.get(this.baseUrl);
+  }
+
+  // ✅ Optionnel : récupération des demandes par étudiant
+  getDemandesByEtudiantId(etudiantId: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/etudiant/${etudiantId}`);
   }
 }

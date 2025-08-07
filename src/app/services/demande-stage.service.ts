@@ -1,27 +1,29 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { DemandeStage } from '../models/demande-stage.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DemandeStageService {
+  private baseUrl = 'http://localhost:8080/api/demandes';
 
-  private apiUrl = 'http://localhost:8080/api/demandes'; // 🔁 À adapter si l’URL diffère
+  constructor(private http: HttpClient) {}
 
-  constructor(private http: HttpClient) { }
-
-  getDemandesByEtudiantId(etudiantId: number): Observable<DemandeStage[]> {
-    return this.http.get<DemandeStage[]>(`${this.apiUrl}/etudiant/${etudiantId}`);
+  // 🔴 ici on remplace `DemandeStage` par `FormData`
+  createDemande(formData: FormData): Observable<any> {
+    return this.http.post(this.baseUrl, formData);
   }
 
-  getAllDemandes(): Observable<DemandeStage[]> {
-    return this.http.get<DemandeStage[]>(this.apiUrl);
+  // autres méthodes utiles
+  getAllDemandes(): Observable<any> {
+    return this.http.get(this.baseUrl);
   }
-  // ✅ Supprimer une demande de stage
-supprimerDemande(id: number) {
-  return this.http.delete(`http://localhost:8080/api/demandes/${id}`);
+
+  getDemandesByEtudiantId(etudiantId: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/etudiant/${etudiantId}`);
+  }
+  supprimerDemande(id: number) {
+return this.http.delete(`${this.baseUrl}/${id}`);
 }
-
 }

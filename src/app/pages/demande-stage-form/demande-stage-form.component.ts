@@ -1,73 +1,75 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { DemandeStageService } from '../../demande-stage.service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { DemandeStageService } from 'src/app/services/demande-stage.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-demande-stage-form',
   templateUrl: './demande-stage-form.component.html',
   styleUrls: ['./demande-stage-form.component.scss']
 })
-export class DemandeStageFormComponent {
-  demandeStageForm: FormGroup;
-  selectedFile: File | null = null;
+export class DemandeStageFormComponent implements OnInit {
+  demandeStageForm!: FormGroup;
+  cvFile?: File;
 
   constructor(
     private fb: FormBuilder,
-    private demandeStageService: DemandeStageService
-  ) {
+    private demandeStageService: DemandeStageService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
     this.demandeStageForm = this.fb.group({
-      entreprise: ['', Validators.required],
       sujet: ['', Validators.required],
+      entreprise: ['', Validators.required],
+      organismeAccueil: [''],
+      departement: [''],
+      responsableDirect: [''],
+      fonctionResponsableDirect: [''],
+      adresse: [''],
+      fax: [''],
+      tel: [''],
+      email: ['', [Validators.email]],
       dateDebut: ['', Validators.required],
       dateFin: ['', Validators.required],
-      organismeAccueil: ['', Validators.required],
-      departement: ['', Validators.required],
-      responsableDirect: ['', Validators.required],
-      fonctionResponsableDirect: ['', Validators.required],
-      adresse: ['', Validators.required],
-      fax: [''], // facultatif
-      tel: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]]
+      cvFile: [null]
     });
   }
 
-  onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0];
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.cvFile = input.files[0];
+    }
   }
 
-  onSubmit() {
+  onSubmit(): void {
     if (this.demandeStageForm.invalid) {
-      this.demandeStageForm.markAllAsTouched();
-      console.warn('⚠️ Formulaire invalide');
+      alert('Veuillez remplir tous les champs obligatoires.');
       return;
     }
 
     const formData = new FormData();
+    const values = this.demandeStageForm.value;
 
-    // Ajout des champs texte
-    Object.entries(this.demandeStageForm.value).forEach(([key, value]) => {
-      formData.append(key, value as string);
-    });
-
-    // Ajout du fichier CV
-    if (this.selectedFile) {
-      formData.append('cv', this.selectedFile, this.selectedFile.name);
-    } else {
-      console.warn('⚠️ Aucun fichier CV sélectionné.');
+    for (const key in values) {
+      if (values[key]) {
+        formData.append(key, values[key]);
+      }
     }
 
-    // Envoi au backend
-    this.demandeStageService.envoyerDemandeStage(formData).subscribe({
-      next: (response: any) => {
-        console.log('✅ Demande envoyée avec succès', response);
-        alert('Demande envoyée avec succès !');
-        this.demandeStageForm.reset();
-        this.selectedFile = null;
+    if (this.cvFile) {
+      formData.append('cvFile', this.cvFile);
+    }
+
+    this.demandeStageService.createDemande(formData).subscribe({
+      next: () => {
+        alert('Demande de stage envoyée avec succès');
+        this.router.navigate(['/mes-demandes']);
       },
-      error: (error: HttpErrorResponse) => {
-        console.error('❌ Erreur lors de l’envoi :', error);
-        alert('Erreur lors de l’envoi de la demande.');
+      error: (err) => {
+        console.error('Erreur lors de la soumission :', err);
+        alert("Une erreur s'est produite lors de la soumission.");
       }
     });
   }
