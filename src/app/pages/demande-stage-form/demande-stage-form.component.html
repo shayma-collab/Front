@@ -1,11 +1,11 @@
-<div class="form-container">
+<div class="form-container"> 
   <h3 class="form-title">DEMANDE DE STAGE</h3>
   <p class="form-subtitle">
     Cette interface vous permet de créer les demandes de stage.<br>
     Veuillez éviter d'utiliser les caractères spéciaux comme apostrophe (') dans les formulaires
   </p>
 
-  <form [formGroup]="demandeStageForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
+  <form [formGroup]="demandeStageForm" (ngSubmit)="onSubmit()">
     <div class="form-grid">
 
       <div class="form-field">
@@ -66,11 +66,6 @@
       <div class="form-field">
         <label>DATE DE FIN</label>
         <input type="date" formControlName="dateFin" />
-      </div>
-
-      <div class="form-field full-width">
-        <label>CV</label>
-        <input type="file" (change)="onFileSelected($event)" />
       </div>
 
     </div>
