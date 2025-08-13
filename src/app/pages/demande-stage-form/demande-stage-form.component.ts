@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { DemandeStageService, DemandeStageRequest } from 'src/app/services/demande-stage.service';
+import { DemandeStageService } from 'src/app/services/demande-stage.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 })
 export class DemandeStageFormComponent implements OnInit {
   demandeStageForm!: FormGroup;
+  cvFile?: File;
 
   constructor(
     private fb: FormBuilder,
@@ -28,10 +29,18 @@ export class DemandeStageFormComponent implements OnInit {
       adresse: [''],
       fax: [''],
       tel: [''],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.email]],
       dateDebut: ['', Validators.required],
-      dateFin: ['', Validators.required]
+      dateFin: ['', Validators.required],
+      cvFile: [null]
     });
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.cvFile = input.files[0];
+    }
   }
 
   onSubmit(): void {
@@ -40,12 +49,22 @@ export class DemandeStageFormComponent implements OnInit {
       return;
     }
 
-    // Cast du formulaire en DemandeStageRequest
-    const demande: DemandeStageRequest = this.demandeStageForm.value;
+    const formData = new FormData();
+    const values = this.demandeStageForm.value;
 
-    this.demandeStageService.createDemande(demande).subscribe({
-      next: (response) => {
-        alert('Demande de stage envoyée avec succès, id: ' + response);
+    for (const key in values) {
+      if (values[key]) {
+        formData.append(key, values[key]);
+      }
+    }
+
+    if (this.cvFile) {
+      formData.append('cvFile', this.cvFile);
+    }
+
+    this.demandeStageService.createDemande(formData).subscribe({
+      next: () => {
+        alert('Demande de stage envoyée avec succès');
         this.router.navigate(['/mes-demandes']);
       },
       error: (err) => {
