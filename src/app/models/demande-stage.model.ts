@@ -1,13 +1,21 @@
-import { Etudiant } from './etudiant.model';
-import { OffreStage } from './offre-stage.model';
+export interface Etudiant {
+  id: number;
+  nom: string;
+  prenom: string;
+  emailInstitutionnel: string;
+  niveau: string;
+  departement: string;
+  specialite: string;
+  motDePasse: string;
+  email?: string;
+}
 
 export interface DemandeStage {
-  id?: number;
-  entreprise?: string;
-  sujet?: string;
-  dateDebut?: string; // format ISO string: "2025-07-17"
-  dateFin?: string;
-  etat?: string;
+  id: number;
+  dateDebut: string;
+  dateFin: string;
+  entreprise: string;
+  sujet: string;
   organismeAccueil?: string;
   departement?: string;
   responsableDirect?: string;
@@ -16,9 +24,8 @@ export interface DemandeStage {
   fax?: string;
   tel?: string;
   email?: string;
-  cvFileUrl?: string;
-
-  // Relations
+  etat: string;
+  offreStage?: any;
   etudiant?: Etudiant;
-  offreStage?: OffreStage;
+  cvFileUrl?: string;
 }

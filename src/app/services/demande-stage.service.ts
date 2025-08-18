@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { DemandeStage } from '../models/demande-stage.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,20 +11,15 @@ export class DemandeStageService {
 
   constructor(private http: HttpClient) {}
 
-  // 🔴 ici on remplace `DemandeStage` par `FormData`
   createDemande(formData: FormData): Observable<any> {
     return this.http.post(this.baseUrl, formData);
   }
 
-  // autres méthodes utiles
-  getAllDemandes(): Observable<any> {
-    return this.http.get(this.baseUrl);
+  getAllDemandes(): Observable<DemandeStage[]> {
+    return this.http.get<DemandeStage[]>(this.baseUrl);
   }
 
-  getDemandesByEtudiantId(etudiantId: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/etudiant/${etudiantId}`);
+  supprimerDemande(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
-  supprimerDemande(id: number) {
-return this.http.delete(`${this.baseUrl}/${id}`);
-}
 }
